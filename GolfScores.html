@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Golf Score Tracker</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input, button {
+    padding: 8px;
+    margin: 5px;
+    width: 90%;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #e9ecef;
+    margin: 5px;
+    padding: 8px;
+    border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Golf Score Tracker</h2>
+
+    <input type="number" id="score" placeholder="Enter Score (1-45)">
+    <input type="date" id="date">
+
+    <button onclick="addScore()">Add Score</button>
+
+    <h3>Last 5 Scores</h3>
+    <ul id="scoreList"></ul>
+</div>
+
+<script>
+
+let scores = JSON.parse(localStorage.getItem("scores")) || [];
+
+function addScore() {
+
+    let score = parseInt(document.getElementById("score").value);
+    let date = document.getElementById("date").value;
+
+    if (!score || score < 1 || score > 45) {
+        alert("Score must be between 1 and 45");
+        return;
+    }
+
+    if (!date) {
+        alert("Please select a date");
+        return;
+    }
+
+    if (scores.length === 5) {
+        scores.shift(); // remove oldest
+    }
+
+    scores.push({
+        score: score,
+        date: date
+    });
+
+    localStorage.setItem("scores", JSON.stringify(scores));
+
+    displayScores();
+
+    document.getElementById("score").value = "";
+    document.getElementById("date").value = "";
+}
+
+function displayScores() {
+
+    let list = document.getElementById("scoreList");
+
+    let sorted = [...scores].sort((a, b) =>
+        new Date(b.date) - new Date(a.date)
+    );
+
+    list.innerHTML = "";
+
+    sorted.forEach(s => {
+        let li = document.createElement("li");
+        li.textContent = s.date + " - Score: " + s.score;
+        list.appendChild(li);
+    });
+}
+
+displayScores();
+
+</script>
+
+</body>
+</html>
